@@ -1,13 +1,8 @@
-import express from 'express';
-import http from 'http';
+import { initSocket } from './websocket/index.js';
+import { initServer } from './server/index.js';
 
-const app = express();
-const server = http.createServer(app)
+// Init server HTTP
+initServer(8080);
 
-app.get('/', (request, response) => {
-    response.send('Hello, world!');
-})
-
-server.listen(8080, () => {
-    console.log('Listening on port 8080');
-});
+// Init server Socket
+initSocket(8081)
