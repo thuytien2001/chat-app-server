@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-    url      = "postgresql://thuytien:123456@localhost:5432/chat_app"
+    url      = "postgresql://thuytien:123456@localhost:5433/chat_app?schemas=public"
     provider = "postgresql"
 }
 
