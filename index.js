@@ -5,4 +5,4 @@ import { initServer } from './server/index.js';
 initServer(8080);
 
 // Init server Socket
-let socket = new webSocket(8081)
+// let socket = new webSocket(8081)

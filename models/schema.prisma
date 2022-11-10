@@ -3,62 +3,51 @@ generator client {
 }
 
 datasource db {
-    url      = "postgresql://thuytien:123456@localhost:5433/chat_app?schemas=public"
-    provider = "postgresql"
+  provider = "postgresql"
+  url      = "postgresql://thuytien:123456@localhost:5433/chat_app?schemas=public"
 }
 
 model User {
-    id        Int                @id @default(autoincrement())
-    createdAt DateTime           @default(now())
-    updatedAt DateTime           @default(now())
-    userName  String             @unique @db.Text
-    name      String             @db.Text
-    password  String             @db.Text
-    imageUri  String             @db.Text
-    // relationship
-    messages  Message[]
-    rooms     UsersOnRoomChats[]
-    syncData  SyncDataOffline?
+  id        Int                @id @default(autoincrement())
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @default(now())
+  userName  String             @unique
+  name      String
+  password  String
+  imageUri  String
+  messages  Message[]
+  rooms     UsersOnRoomChats[]
 }
 
 model Message {
-    id          Int               @id @default(autoincrement())
-    createdAt   DateTime          @default(now())
-    content     String            @db.Text
-    createdBy   User              @relation(fields: [createdById], references: [id])
-    createdById Int
-    room        RoomChat          @relation(fields: [roomId], references: [id])
-    roomId      Int
-    // relationship
-    lastSeenBy  UsersOnRoomChats?
+  id          Int               @id @default(autoincrement())
+  createdAt   DateTime          @default(now())
+  content     String
+  createdById Int
+  roomId      Int
+  createdBy   User              @relation(fields: [createdById], references: [id])
+  room        RoomChat          @relation(fields: [roomId], references: [id])
+  lastSeenBy  UsersOnRoomChats?
 }
 
 model RoomChat {
-    id        Int                @id @default(autoincrement())
-    createdAt DateTime           @default(now())
-    updatedAt DateTime           @default(now())
-    name      String             @db.Text
-    avatarUri String?            @db.Text
-    // relationship
-    users     UsersOnRoomChats[]
-    messages  Message[]
+  id        Int                @id @default(autoincrement())
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @default(now())
+  name      String
+  avatarUri String?
+  messages  Message[]
+  users     UsersOnRoomChats[]
 }
 
 model UsersOnRoomChats {
-    user              User     @relation(fields: [userId], references: [id])
-    userId            Int
-    room              RoomChat @relation(fields: [roomId], references: [id])
-    roomId            Int
-    createdAt         DateTime @default(now())
-    lastMessageSeen   Message? @relation(fields: [lastMessageSeenId], references: [id])
-    lastMessageSeenId Int?     @unique
+  userId            Int
+  roomId            Int
+  createdAt         DateTime @default(now())
+  lastMessageSeenId Int?     @unique
+  lastMessageSeen   Message? @relation(fields: [lastMessageSeenId], references: [id])
+  room              RoomChat @relation(fields: [roomId], references: [id])
+  user              User     @relation(fields: [userId], references: [id])
 
-    @@id([userId, roomId])
-}
-
-model SyncDataOffline {
-    id           Int       @id @default(autoincrement())
-    user         User      @relation(fields: [userId], references: [id])
-    userId       Int       @unique
-    lastTimeSync DateTime?
+  @@id([userId, roomId])
 }
