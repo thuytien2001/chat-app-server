@@ -2,6 +2,7 @@ import express from 'express';
 import http from 'http';
 import bodyParser from "body-parser";
 import { messageRouter, accountRouter, roomRouter, syncRouter } from '../routes/index.js'
+import logger from '../services/logger.js';
 
 const app = express();
 const server = http.createServer(app)
@@ -23,8 +24,11 @@ app.use("*", (req, res) => {
     })
 })
 
-export function initServer(port) {
-    server.listen(port, () => {
-        console.log('Listening on port ' + port);
-    });
+export default {
+    start: (port) => {
+        server.listen(port, () => {
+            logger.Info('Http server listening on: port ' + port);
+        });
+        return server;
+    }
 }

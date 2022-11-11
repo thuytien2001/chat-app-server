@@ -2,7 +2,7 @@ export default {
     jwt: {
         secretCode: "secretCode",
         secretCodeBlackList: "secretCodeBlackList",
-        expireTime: '24h', // 12 hours
+        expireTime: '6h', // 12 hours
     },
     admin: {
         id: 1,

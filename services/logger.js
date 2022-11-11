@@ -6,7 +6,7 @@ import path from "path";
 const __dirname = fileURLToPath(import.meta.url);
 const fileLog = path.join(path.dirname(__dirname), "debug.log");
 
-const log_file = fs.createWriteStream(fileLog, { flags: 'w+' });
+const log_file = fs.createWriteStream(fileLog, { flags: 'a' });
 const log_stdout = process.stdout;
 
 const tags = {

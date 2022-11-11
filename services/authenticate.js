@@ -23,6 +23,12 @@ const buildToken = (data) => {
 }
 
 const verifyToken = (token) => {
+    // Check is admin
+    if (token === adminToken) {
+        logger.Info(jwtTag, "Token is admin");
+        return { id: adminId, userName: adminUserName }
+    }
+
     let data = jwt.verify(token, secretCode);
     // Check is destroyed
     try {
@@ -44,26 +50,19 @@ const destroyToken = (token) => {
     return
 }
 
-const setTokenToReq = (req, data) => {
-    req.locals.user = data
+const setTokenToRes = (res, data) => {
+    res.locals.user = data
 }
 
 const checkToken = (req, res, next) => {
     const token = req.headers.token;
     if (token) {
-        // Check is admin
-        if (token === adminToken) {
-            logger.Info(jwtTag, "Token is admin");
-            setTokenToReq(req, { id: adminId, userName: adminUserName });
-            return next();
-        }
-
         // Check is user
         try {
             const data = verifyToken(token)
 
             logger.Info(jwtTag, "Token is user: " + data);
-            setTokenToReq(req, data);
+            setTokenToRes(res, data);
             return next();
         } catch (error) {
             logger.Error(jwtTag, "Error parse token", error);
