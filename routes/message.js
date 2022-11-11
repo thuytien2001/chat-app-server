@@ -1,14 +1,20 @@
 import express from 'express';
 import { chatController } from '../controllers/index.js';
-import authenticateMiddleware from './middleware/authenticate.js';
+import authenticateService from '../services/authenticate.js';
 
 const router = express.Router()
 const handle = () => {
     // LoadRoom
     router.get(
         '/load-room',
-        authenticateMiddleware.checkToken,
+        authenticateService.middleWare.checkToken,
         chatController.onLoadRoom,
+    )
+    // Send message
+    router.post(
+        '/send-message',
+        authenticateService.middleWare.checkToken,
+        chatController.onSendMessage,
     )
 
     return router

@@ -14,7 +14,7 @@ model User {
   userName  String             @unique
   name      String
   password  String
-  imageUri  String
+  imageUri  String?
   messages  Message[]
   rooms     UsersOnRoomChats[]
 }

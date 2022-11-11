@@ -17,6 +17,9 @@ export const httpCode = {
 export const codes = {
     INTERNAL: 0,
     SUCCESS_WITHOUT_ARGS: 1,
+    UNAUTHORIZED: 2,
+    TOKEN_EXPIRED: 3,
+    NOT_FOUND: 4,
 }
 
 export const utils = {

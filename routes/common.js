@@ -1,11 +1,13 @@
-import { buildResponse, buildErrorResponseData, codes, httpCode } from '../utils/common.js';
+import { buildResponse, buildErrorResponseData, } from '../utils/common.js';
+import { codes, httpCode } from '../utils/const.js';
+import logger from '../services/logger.js';
 
 export function wrapResponse(handleFunc) {
     return async (req, res, next) => {
         try {
             await handleFunc(req, res);
         } catch (error) {
-            logger.error(error, req);
+            logger.Error(error.message);
 
             var errorCode = codes.INTERNAL
             var errorMessage = "Unexpected error on server"
