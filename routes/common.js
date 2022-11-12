@@ -5,7 +5,7 @@ import logger from '../services/logger.js';
 export function wrapResponse(handleFunc) {
     return async (req, res, next) => {
         try {
-            await handleFunc(req, res);
+            await handleFunc(req, res, next);
         } catch (error) {
             logger.Error(error);
 

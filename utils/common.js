@@ -2,15 +2,17 @@ import { httpCode, codes, utils } from "./const.js";
 import logger from '../services/logger.js'
 import util from 'util';
 
+const isEmpty = (object) => Object.keys(object).length === 0
+
 export const getRequestString = (req) => {
     var result = util.format('METHOD: %s, URL: %s', req.method, req.url)
-    if (req.body) {
+    if (!isEmpty(req.body)) {
         result += util.format(', BODY: %s', req.body)
     }
-    if (req.params) {
+    if (!isEmpty(req.params)) {
         result += util.format(', PARAMS: %s', req.params)
     }
-    if (req.query) {
+    if (!isEmpty(req.query)) {
         result += util.format(', QUERY: %s', req.query)
     }
     return result

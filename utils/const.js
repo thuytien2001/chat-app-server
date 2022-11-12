@@ -20,6 +20,7 @@ export const codes = {
     UNAUTHORIZED: 2,
     TOKEN_EXPIRED: 3,
     NOT_FOUND: 4,
+    USER_NOT_IN_ROOM: 5,
 }
 
 export const utils = {
