@@ -9,4 +9,7 @@ export default {
         userName: 'admin',
         token: "token_admin",
     },
+    message: {
+        maxMessagePerPage: 20,
+    },
 }

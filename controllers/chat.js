@@ -1,14 +1,61 @@
-import { buildSuccessResponse } from "../utils/common.js";
+import { buildSuccessResponse, getUserInfo } from "../utils/common.js";
 import { codes, httpCode } from "../utils/const.js";
 import { myPrisma } from '../models/index.js';
 import { default as socketServer, SERVER_EVENT } from '../websocket/index.js';
+import config from "../config/index.js";
 
 export default {
     onLoadRoom: async (req, res) => {
-        return buildSuccessResponse(
-            res,
-            {}
-        )
+        var {
+            roomId,
+            beforeMessageId,
+            pageSize,
+        } = req.query;
+
+        roomId = parseInt(roomId);
+        beforeMessageId = parseInt(beforeMessageId);
+        pageSize = parseInt(pageSize);
+        if (pageSize > config.message.maxMessagePerPage) { // Check pageSize request is larger than maximum
+            pageSize = config.message.maxMessagePerPage
+        }
+
+        // Get messages
+        const messages = await myPrisma.message.findMany({
+            where: {
+                roomId: roomId,
+                id: {
+                    lt: beforeMessageId,
+                }
+            },
+            take: pageSize,
+            orderBy: {
+                id: 'desc'
+            },
+            select: {
+                id: true,
+                content: true,
+                createdAt: true,
+                createdBy: {
+                    select: {
+                        id: true,
+                        name: true,
+                    },
+                },
+            },
+        })
+
+        return buildSuccessResponse(res, {
+            roomId: roomId,
+            totalItems: messages.length,
+            items: messages.map(message => {
+                return {
+                    id: message.id,
+                    content: message.content,
+                    createdAt: message.createdAt,
+                    createdBy: message.createdBy,
+                }
+            }),
+        });
     },
 
     onSendMessage: async (req, res) => {
@@ -17,7 +64,7 @@ export default {
             roomId,
             localId,
         } = req.body;
-        const userInfo = res.locals.user
+        const userInfo = getUserInfo(res)
 
         // Create message
         const message = await myPrisma.message.create({

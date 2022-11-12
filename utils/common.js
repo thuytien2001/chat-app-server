@@ -2,7 +2,7 @@ import { httpCode, codes, utils } from "./const.js";
 import logger from '../services/logger.js'
 import util from 'util';
 
-const getRequestString = (req) => {
+export const getRequestString = (req) => {
     var result = util.format('METHOD: %s, URL: %s', req.method, req.url)
     if (req.body) {
         result += util.format(', BODY: %s', req.body)
@@ -14,6 +14,14 @@ const getRequestString = (req) => {
         result += util.format(', QUERY: %s', req.query)
     }
     return result
+}
+
+export function getUserInfo(res) {
+    return res.locals.user
+}
+
+export function setUserInfo(res, data) {
+    res.locals.user = data
 }
 
 export function buildSuccessResponseData(code, message, data) {

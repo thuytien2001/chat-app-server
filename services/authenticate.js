@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import config from "../config/index.js";
-import { buildErrorResponseData, buildResponse, buildUnAuthorizedResponse } from "../utils/common.js";
+import { buildErrorResponseData, buildResponse, buildUnAuthorizedResponse, getRequestString, setUserInfo } from "../utils/common.js";
 import { httpCode, codes } from '../utils/const.js';
 import logger from "./logger.js";
 
@@ -25,7 +25,6 @@ const buildToken = (data) => {
 const verifyToken = (token) => {
     // Check is admin
     if (token === adminToken) {
-        logger.Info(jwtTag, "Token is admin");
         return { id: adminId, userName: adminUserName }
     }
 
@@ -50,10 +49,6 @@ const destroyToken = (token) => {
     return
 }
 
-const setTokenToRes = (res, data) => {
-    res.locals.user = data
-}
-
 const checkToken = (req, res, next) => {
     const token = req.headers.token;
     if (token) {
@@ -61,8 +56,8 @@ const checkToken = (req, res, next) => {
         try {
             const data = verifyToken(token)
 
-            logger.Info(jwtTag, "Token is user: " + data);
-            setTokenToRes(res, data);
+            logger.Info(jwtTag, "Token is user", data);
+            setUserInfo(res, data);
             return next();
         } catch (error) {
             logger.Error(jwtTag, "Error parse token", error);
@@ -78,6 +73,7 @@ const checkToken = (req, res, next) => {
         }
     } else {
         // Not token
+        logger.Error(getRequestString(req), "No token provided")
         return buildUnAuthorizedResponse(res, "No token provided");
     }
 };

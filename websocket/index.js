@@ -37,6 +37,28 @@ const handleOnline = (client, data) => {
 let io = new Server();
 io.on("connection", onConnection)
 
+const emitMessageReceived = async (data) => {
+    const {
+        roomId
+    } = data;
+
+    // Find all user in room
+    const usersInRoom = await myPrisma.usersOnRoomChats.findMany({
+        where: {
+            roomId: roomId,
+        },
+        select: {
+            user: true
+        }
+    });
+
+    // Emit data
+    for (const userInRoom of usersInRoom) {
+        io.to(userInRoom.user.id).emit(SERVER_EVENT.RECEIVE_MESSAGE, data);
+    }
+    logger.Info("emitMessageReceived", "Emit success, userIds: " + usersInRoom.map(userInRoom => userInRoom.user.id));
+};
+
 export default {
     start: (httpServer) => {
         io.listen(httpServer)
@@ -44,25 +66,5 @@ export default {
         return io
     },
     emit: (roomId, eventName, data) => io.to(roomId).emit(eventName, data),
-    emitMessageReceived: async (data) => {
-        const {
-            roomId
-        } = data;
-
-        // Find all user in room
-        const usersInRoom = await myPrisma.usersOnRoomChats.findMany({
-            where: {
-                roomId: roomId,
-            },
-            select: {
-                user: true
-            }
-        })
-
-        // Emit data
-        for (const userInRoom of usersInRoom) {
-            io.to(userInRoom.user.id).emit(SERVER_EVENT.RECEIVE_MESSAGE, data)
-        }
-        logger.Info("emitMessageReceived", "Emit success, userIds: " + usersInRoom.map(userInRoom => userInRoom.user.id));
-    },
+    emitMessageReceived,
 }

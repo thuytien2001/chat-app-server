@@ -21,8 +21,11 @@ const tags = {
  * @param {any[]} messages 
  */
 function Print(tag, ...messages) {
-    const date = new Date()
-    const formatString = util.format(date.toISOString(), tag, ...messages)
+    const date = new Date();
+    const messagesJson = messages.map(message => {
+        return JSON.stringify(message)
+    });
+    const formatString = util.format(date.toISOString(), tag, ...messagesJson);
 
     log_file.write(formatString + '\n');
     log_stdout.write(formatString + '\n');
