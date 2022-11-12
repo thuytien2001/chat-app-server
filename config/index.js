@@ -12,4 +12,7 @@ export default {
     message: {
         maxMessagePerPage: 20,
     },
+    room: {
+        numberMessagePerPage: 10,
+    }
 }
