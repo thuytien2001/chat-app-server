@@ -9,6 +9,16 @@ export default {
             username,
             password,
         } = req.query;
+        if (!username && !password) {
+            return buildResponse(
+                res,
+                httpCode.BAD_REQUEST,
+                buildErrorResponseData(
+                    codes.INTERNAL,
+                    `Username or password is required`
+                )
+            )
+        }
 
         // Find user
         const user = await myPrisma.user.findFirst({

@@ -8,12 +8,12 @@ export default {
     onLoadRoom: async (req, res) => {
         var {
             roomId,
-            beforeMessageId,
+            beforeTime,
             pageSize,
         } = req.query;
 
         roomId = parseInt(roomId);
-        beforeMessageId = parseInt(beforeMessageId);
+        beforeTime = new Date(beforeTime);
         pageSize = parseInt(pageSize);
         if (pageSize > config.message.maxMessagePerPage) { // Check pageSize request is larger than maximum
             pageSize = config.message.maxMessagePerPage
@@ -23,8 +23,8 @@ export default {
         const messages = await myPrisma.message.findMany({
             where: {
                 roomId: roomId,
-                id: {
-                    lt: beforeMessageId,
+                createdAt: {
+                    lte: beforeTime,
                 }
             },
             take: pageSize,

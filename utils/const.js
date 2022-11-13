@@ -15,12 +15,12 @@ export const httpCode = {
 }
 
 export const codes = {
-    INTERNAL: 0,
-    SUCCESS_WITHOUT_ARGS: 1,
-    UNAUTHORIZED: 2,
-    TOKEN_EXPIRED: 3,
-    NOT_FOUND: 4,
-    USER_NOT_IN_ROOM: 5,
+    INTERNAL: 500,
+    SUCCESS_WITHOUT_ARGS: 200,
+    UNAUTHORIZED: 401,
+    TOKEN_EXPIRED: 1001,
+    NOT_FOUND: 404,
+    USER_NOT_IN_ROOM: 1002,
 }
 
 export const utils = {
