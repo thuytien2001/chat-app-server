@@ -7,7 +7,7 @@ export default {
             lastSyncData
         } = req.query;
 
-        lastSyncData = new Date(lastSyncData)
+        lastSyncData = lastSyncData === null ? null : new Date(lastSyncData)
 
         const userInfo = getUserInfo(res)
         const messages = await myPrisma.message.findMany({
@@ -41,21 +41,40 @@ export default {
                     select: {
                         id: true,
                         name: true,
+                        users: true,
                     }
                 },
             }
         })
-        return buildSuccessResponse(res, {
-            totalItems: messages.length,
-            items: messages.map(message => {
-                return {
-                    id: message.id,
-                    content: message.content,
-                    createdAt: message.createdAt,
-                    createdBy: message.createdBy,
-                    room: message.room,
+
+        var rooms = {};
+        messages.forEach(message => {
+            const messageInRoom = {
+                id: message.id,
+                content: message.content,
+                createdAt: message.createdAt,
+                createdBy: {
+                    id: message.createdBy.id,
+                    imageUri: message.createdBy.imageUri,
+                    name: message.createdBy.name,
+                },
+            }
+            if (!rooms[message.room.id]) {
+                rooms[message.room.id] = {
+                    id: message.room.id,
+                    name: message.room.name,
+                    messages: [
+                        messageInRoom
+                    ],
                 }
-            })
+            } else {
+                rooms[message.room.id].messages = [...rooms[message.room.id].messages, messageInRoom]
+            }
+        })
+
+        return buildSuccessResponse(res, {
+            totalItems: Object.keys(rooms).length,
+            items: Object.values(rooms),
         });
     }
 }
