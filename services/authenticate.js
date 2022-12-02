@@ -14,7 +14,7 @@ const secretCode = config.jwt.secretCode;
 const secretCodeBlackList = config.jwt.secretCodeBlackList;
 const expriesIn = config.jwt.expireTime;
 const adminId = config.admin.id;
-const adminUserName = config.admin.userName;;
+const adminUserName = config.admin.userName;
 const adminToken = config.admin.token;
 const jwtTag = "JWT_CHECK";
 
@@ -35,7 +35,7 @@ const verifyToken = (token) => {
         if (destroyData) {
             throw new Error(jwtErrors.IS_DESTROYED)
         }
-    } catch (error) { }
+    } catch (error) { /* empty */ }
     return data
 }
 
@@ -45,7 +45,7 @@ const destroyToken = (token) => {
         if (data) {
             jwt.sign(data, secretCodeBlackList, { expiresIn: expriesIn });
         }
-    } catch (error) { }
+    } catch (error) { /* empty */ }
     return
 }
 

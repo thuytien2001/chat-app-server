@@ -7,7 +7,7 @@ export function wrapResponse(handleFunc) {
         try {
             await handleFunc(req, res, next);
         } catch (error) {
-            logger.Error(error);
+            logger.Error(error.message || error);
 
             var errorCode = codes.INTERNAL
             var errorMessage = "Unexpected error on server"

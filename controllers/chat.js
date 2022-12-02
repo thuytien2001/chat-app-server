@@ -1,7 +1,6 @@
 import { buildSuccessResponse, getUserInfo } from "../utils/common.js";
-import { codes, httpCode } from "../utils/const.js";
 import { myPrisma } from '../models/index.js';
-import { default as socketServer, SERVER_EVENT } from '../websocket/index.js';
+import { default as socketServer } from '../websocket/index.js';
 import config from "../config/index.js";
 
 export default {

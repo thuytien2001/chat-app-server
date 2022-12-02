@@ -8,15 +8,30 @@ const NUMBER_MESSAGE_PER_LOAD = config.room.numberMessagePerPage;
 export default {
     onGetRoom: async (req, res) => {
         let {
-            roomId
+            roomId,
+            pageSize,
+            page,
         } = req.query
-        roomId = parseInt(roomId);
-        const userInfo = getUserInfo(res);
+        roomId = parseInt(roomId) || 0;
+        page = parseInt(page) || 1;
+        pageSize = parseInt(pageSize) || 1;
+        const userInfo = getUserInfo(res)
 
-        const room = await myPrisma.roomChat.findFirst({
-            where: {
-                id: roomId,
-            },
+        const isFindOne = roomId !== 0
+
+        var whereCondition = {
+            users: {
+                some: {
+                    userId: userInfo.id,
+                }
+            }
+        }
+        if (isFindOne) {
+            whereCondition.id = roomId
+        }
+
+        const rooms = await myPrisma.roomChat.findMany({
+            where: whereCondition,
             select: {
                 id: true,
                 name: true,
@@ -46,9 +61,11 @@ export default {
                         },
                     },
                 },
-            }
+            },
+            take: pageSize,
+            skip:  (page - 1)*pageSize,
         })
-        if (!room) {
+        if (rooms.length === 0) {
             return buildResponse(
                 res,
                 httpCode.NOT_FOUND,
@@ -57,26 +74,31 @@ export default {
         }
 
         return buildSuccessResponse(res, {
-            id: room.id,
-            name: room.name,
-            avatarUri: room.avatarUri,
-            createdAt: room.createdAt,
-            maxNumberMessagePerPage: NUMBER_MESSAGE_PER_LOAD,
-            lastMessages: room.messages?.map(message => {
+            totalItems: rooms.length,
+            items: rooms.map(room => {
                 return {
-                    id: message.id,
-                    content: message.content,
-                    createdById: message.createdById,
-                    createdAt: message.createdAt,
+                    id: room.id,
+                    name: room.name,
+                    avatarUri: room.avatarUri,
+                    createdAt: room.createdAt,
+                    maxNumberMessagePerPage: NUMBER_MESSAGE_PER_LOAD,
+                    lastMessages: room.messages?.map(message => {
+                        return {
+                            id: message.id,
+                            content: message.content,
+                            createdById: message.createdById,
+                            createdAt: message.createdAt,
+                        }
+                    }) ?? [],
+                    usersInRoom: room.users.map(userInRoom => {
+                        return {
+                            id: userInRoom.user.id,
+                            name: userInRoom.user.name,
+                            imageUri: userInRoom.user.imageUri,
+                        }
+                    }) ?? [],
                 }
-            }) ?? [],
-            usersInRoom: room.users.map(userInRoom => {
-                return {
-                    id: userInRoom.user.id,
-                    name: userInRoom.user.name,
-                    imageUri: userInRoom.user.imageUri,
-                }
-            }) ?? [],
+            })
         })
     }
 }

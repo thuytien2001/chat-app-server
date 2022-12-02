@@ -1,4 +1,4 @@
-import { buildErrorResponseData, buildResponse, buildUnAuthorizedResponse, getRequestString, getUserInfo } from "../utils/common.js";
+import { buildErrorResponseData, buildResponse, getRequestString, getUserInfo } from "../utils/common.js";
 import { httpCode, codes } from '../utils/const.js';
 import logger from "./logger.js";
 import { myPrisma } from '../models/index.js';

@@ -2,6 +2,7 @@ import fs from 'fs';
 import util from 'util';
 import { fileURLToPath } from "url";
 import path from "path";
+import process from 'node:process';
 
 const __dirname = fileURLToPath(import.meta.url);
 const fileLog = path.join(path.dirname(__dirname), "debug.log");
