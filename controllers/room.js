@@ -82,7 +82,7 @@ export default {
                     avatarUri: room.avatarUri,
                     createdAt: room.createdAt,
                     maxNumberMessagePerPage: NUMBER_MESSAGE_PER_LOAD,
-                    lastMessages: room.messages?.map(message => {
+                    messages: room.messages?.map(message => {
                         return {
                             id: message.id,
                             content: message.content,
