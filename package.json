@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "server": "nodemon index",
-    "setup:db": "npx prisma migrate deploy --schema models/schema.prisma && npx prisma db execute --file models/sample_queries/query.sql --schema models/schema.prisma"
+    "setup:db": "npx prisma migrate deploy --schema models/schema.prisma && npx prisma db execute --file models/sample_queries/query.sql --schema models/schema.prisma && npx prisma generate --schema models/schema.prisma"
   },
   "repository": {
     "type": "git",
