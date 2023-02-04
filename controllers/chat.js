@@ -101,7 +101,7 @@ export default {
         const search_words = content.split(" ");
         const search_pattern = search_words.join(" | ");
         const message_props = '"id", "createdAt", "content", "createdById", "roomId"';
-        const sql = `SELECT ${message_props}, ts_rank_cd(full_txt_search_idx, query) AS rank FROM "Message", to_tsquery('${search_pattern}') as query WHERE "roomId"=${roomId} AND query @@ full_txt_search_idx ORDER BY "createdAt" DESC LIMIT ${limit} OFFSET ${offset};`;
+        const sql = `SELECT ${message_props}, ts_rank_cd(full_txt_search_idx, query) AS rank FROM "Message", to_tsquery(f_unaccent('${search_pattern}')) as query WHERE "roomId"=${roomId} AND query @@ full_txt_search_idx ORDER BY "createdAt" DESC LIMIT ${limit} OFFSET ${offset};`;
         console.log("findMessage", {content, roomId, offset, limit, sql})
         const rs = [];
         const messages = await myPrisma.$queryRaw(Prisma.sql([sql]));
