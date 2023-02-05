@@ -1,80 +1,78 @@
 import { buildSuccessResponse, getUserInfo } from "../utils/common.js";
-import { myPrisma } from '../models/index.js';
+import { myPrisma } from "../models/index.js";
 
 export default {
-    onSyncData: async (req, res) => {
-        var {
-            lastSyncData
-        } = req.query;
+  onSyncData: async (req, res) => {
+    var { lastSyncData } = req.query;
 
-        lastSyncData = lastSyncData === null ? null : new Date(lastSyncData)
+    lastSyncData = lastSyncData == null ? new Date(0) : new Date(lastSyncData);
 
-        const userInfo = getUserInfo(res)
-        const messages = await myPrisma.message.findMany({
-            where: {
+    const userInfo = getUserInfo(res);
+    var rooms = await myPrisma.roomChat.findMany({
+      where: {
+        OR: [
+          {
+            updatedAt: {
+              gte: lastSyncData,
+            },
+          },
+          {
+            messages: {
+              some: {
                 createdAt: {
-                    gte: lastSyncData
+                  gte: lastSyncData,
                 },
-                room: {
-                    users: {
-                        some: {
-                            userId: userInfo.id
-                        }
-                    }
-                },
+              },
             },
-            orderBy: {
-                id: 'asc',
+          },
+        ],
+      },
+      include: {
+        messages: {
+          where: {
+            createdAt: {
+              gte: lastSyncData,
             },
-            select: {
+          },
+          select: {
+            id: true,
+            content: true,
+            createdAt: true,
+            createdBy: {
+              select: {
                 id: true,
-                content: true,
-                createdAt: true,
-                createdBy: {
-                    select: {
-                        id: true,
-                        imageUri: true,
-                        name: true,
-                    }
-                },
-                room: {
-                    select: {
-                        id: true,
-                        name: true,
-                        users: true,
-                    }
-                },
-            }
-        })
+                name: true,
+                imageUri: true,
+              },
+            },
+          },
+          orderBy: { id: "desc" },
+        },
+        users: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                imageUri: true,
+              },
+            },
+          },
+        },
+      },
+    });
 
-        var rooms = {};
-        messages.forEach(message => {
-            const messageInRoom = {
-                id: message.id,
-                content: message.content,
-                createdAt: message.createdAt,
-                createdBy: {
-                    id: message.createdBy.id,
-                    imageUri: message.createdBy.imageUri,
-                    name: message.createdBy.name,
-                },
-            }
-            if (!rooms[message.room.id]) {
-                rooms[message.room.id] = {
-                    id: message.room.id,
-                    name: message.room.name,
-                    messages: [
-                        messageInRoom
-                    ],
-                }
-            } else {
-                rooms[message.room.id].messages = [...rooms[message.room.id].messages, messageInRoom]
-            }
-        })
+    var roomsRes = rooms.map((room) => {
+      var {users, ...roomRes} = {
+        ...room,
+        joiners: room.users,
+      };
+      return roomRes
+    });
 
-        return buildSuccessResponse(res, {
-            totalItems: Object.keys(rooms).length,
-            items: Object.values(rooms),
-        });
-    }
-}
+    return buildSuccessResponse(res, {
+      totalItems: Object.keys(roomsRes).length,
+      items: Object.values(roomsRes),
+    });
+  },
+};

@@ -56,7 +56,7 @@ const emitMessageReceived = async (data) => {
     for (const userInRoom of usersInRoom) {
         io.to(userInRoom.user.id).emit(SERVER_EVENT.RECEIVE_MESSAGE, data);
     }
-    logger.Info("emitMessageReceived", "Emit success, userIds: " + usersInRoom.map(userInRoom => userInRoom.user.id));
+    logger.Info("emitMessageReceived", `Emit success, userIds: [${usersInRoom.map(userInRoom => userInRoom.user.id)}]`);
 };
 
 export default {
