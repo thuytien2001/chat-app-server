@@ -19,7 +19,7 @@ CREATE TABLE "Message" (
     "createdById" INTEGER NOT NULL,
     "roomId" INTEGER NOT NULL,
 
-    CONSTRAINT "Message_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Message_pkey" PRIMARY KEY ("id") AUTO_INCREMENT
 );
 
 -- CreateTable
@@ -30,7 +30,7 @@ CREATE TABLE "RoomChat" (
     "name" TEXT NOT NULL,
     "avatarUri" TEXT,
 
-    CONSTRAINT "RoomChat_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "RoomChat_pkey" PRIMARY KEY ("id") AUTO_INCREMENT
 );
 
 -- CreateTable

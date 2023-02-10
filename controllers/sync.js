@@ -5,7 +5,7 @@ export default {
   onSyncData: async (req, res) => {
     var { lastSyncData } = req.query;
 
-    lastSyncData = lastSyncData == null ? new Date(0) : new Date(lastSyncData);
+    lastSyncData = !lastSyncData ? new Date(0) : new Date(lastSyncData);
 
     const userInfo = getUserInfo(res);
     var rooms = await myPrisma.roomChat.findMany({
@@ -26,6 +26,15 @@ export default {
             },
           },
         ],
+        AND: [
+          {
+            users: {
+              some: {
+                userId: userInfo.id
+              }
+            }
+          }
+        ]
       },
       include: {
         messages: {

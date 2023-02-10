@@ -26,12 +26,17 @@ INSERT INTO "User"("id", "userName", "password", "name", "imageUri") VALUES
 
 INSERT INTO "RoomChat"("id", "name", "avatarUri") VALUES
 (1,'Phòng chat số 1', null),
-(2,'Phòng chat số 2', null);
+(2,'Phòng chat số 2', null),
+(3,'Phòng chat số 3', null);
 
 INSERT INTO "Message"("id", "content", "createdById", "roomId") VALUES
 (1, 'Xin chào, cho mình làm quen nha', 1, 1),
-(2, 'Chào bạn, mình tên Nhực', 2, 1);
+(2, 'Chào bạn, mình tên Nhực', 2, 1),
+(3, 'Xin chào mọi người, mình là thành viên mới', 2, 3);
 
 INSERT INTO "UsersOnRoomChats"("userId", "roomId","lastMessageSeenId") VALUES
 (1, 1, null),
-(2, 1, 1);
+(2, 1, 1),
+(1, 3, null),
+(2, 3, 3),
+(3, 3, null);

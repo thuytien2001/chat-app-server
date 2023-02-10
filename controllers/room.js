@@ -66,7 +66,7 @@ export default {
       take: pageSize,
       skip: (page - 1) * pageSize,
     });
-    if (!rooms.length) {
+    if (!rooms.length && roomId) {
       return buildResponse(
         res,
         httpCode.NOT_FOUND,
