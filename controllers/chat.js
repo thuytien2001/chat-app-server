@@ -66,6 +66,15 @@ export default {
         roomId: roomId,
         createdById: userInfo.id,
       },
+      include: {
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            imageUri: true,
+          },
+        },
+      },
     });
 
     var data = {
@@ -73,6 +82,7 @@ export default {
       content: message.content,
       createdAt: message.createdAt,
       createdById: message.createdById,
+      createdBy: message.createdBy,
       roomId: message.roomId,
     };
 
@@ -93,18 +103,32 @@ export default {
       '"id", "createdAt", "content", "createdById", "roomId"';
     const sql = `SELECT ${message_props}, ts_rank_cd(full_txt_search_idx, query) AS rank FROM "Message", to_tsquery(f_unaccent('${search_pattern}')) as query WHERE "roomId"=${roomId} AND query @@ full_txt_search_idx ORDER BY "createdAt" DESC LIMIT ${limit} OFFSET ${offset};`;
     console.log("findMessage", { content, roomId, offset, limit, sql });
-    const rs = [];
-    const messages = await myPrisma.$queryRaw(Prisma.sql([sql]));
-    for (let i = 0; i < messages.length; i++) {
-      const msg = messages[i];
-      const user = await myPrisma.user.findUnique({
-        where: { id: msg.createdById },
-      });
-      rs.push({
-        message: msg,
-        user: user,
-      });
-    }
-    return rs;
+    const messageRes = await myPrisma.$queryRaw(Prisma.sql([sql]));
+
+    const userRes = await myPrisma.user.findMany({
+      where: {
+        id: {
+          in: messageRes.map((i) => i.createdById),
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        imageUri: true,
+      },
+    });
+    const users = {};
+    userRes.forEach((u) => {
+      users[u.id] = u;
+    });
+
+    var messages = messageRes.map((m) => {
+      return {
+        ...m,
+        createdBy: users[m.createdById],
+      };
+    });
+
+    return messages
   },
 };
