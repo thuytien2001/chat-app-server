@@ -49,7 +49,8 @@ export default {
           orderBy: { id: "desc" },
         },
         users: {
-          include: {
+          select: {
+            lastMessageSeenId: true,
             user: {
               select: {
                 id: true,
@@ -63,11 +64,13 @@ export default {
     });
 
     var roomsRes = rooms.map((room) => {
-      var {users, ...roomRes} = {
+      var { users, ...roomRes } = {
         ...room,
-        joiners: room.users,
+        joiners: room.users.map(({ lastMessageSeenId, user }) => {
+          return { ...user, lastMessageSeenId };
+        }),
       };
-      return roomRes
+      return roomRes;
     });
 
     return buildSuccessResponse(res, {
